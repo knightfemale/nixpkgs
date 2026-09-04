@@ -1,0 +1,18 @@
+diff --git a/arknights_mower/utils/email.py b/arknights_mower/utils/email.py
+index b76859a9..f5895f12 100644
+--- a/arknights_mower/utils/email.py
++++ b/arknights_mower/utils/email.py
+@@ -15,9 +15,11 @@ from arknights_mower.utils import config
+ from arknights_mower.utils import typealias as tp
+ from arknights_mower.utils.image import img2bytes
+ from arknights_mower.utils.log import logger
+-from arknights_mower.utils.path import get_path
++import os
+ 
+-template_dir = get_path("@internal/arknights_mower/templates")
++template_dir = os.path.join(
++    os.path.dirname(os.path.abspath(__file__)), "..", "templates"
++)
+ env = Environment(loader=FileSystemLoader(template_dir), autoescape=select_autoescape())
+ 
+ task_template = env.get_template("task.html")
