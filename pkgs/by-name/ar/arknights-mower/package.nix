@@ -3,6 +3,7 @@
   buildNpmPackage,
   fetchFromGitHub,
   makeBinaryWrapper,
+  bash,
   python3,
   stdenvNoCC,
 }:
@@ -83,6 +84,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     ./server-ui.patch
   ];
 
+  # MaaCore spawns adb via `execlp("sh", ...)` (PosixIO), which resolves sh from PATH.
+  # The systemd unit's default PATH lacks /bin, so suffix bash's bin (provides sh) to
+  # keep those subprocesses (and any MAA adb commands) executable.
   installPhase = ''
     runHook preInstall
 
@@ -93,7 +97,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     makeBinaryWrapper ${lib.getExe pythonEnv} $out/bin/mower \
       --add-flag "$out/share/arknights-mower/webserver.py" \
       --unset NIX_PYTHONPATH \
-      --unset PYTHONPATH
+      --unset PYTHONPATH \
+      --prefix PATH : ${lib.makeBinPath [ bash ]}
 
     runHook postInstall
   '';
