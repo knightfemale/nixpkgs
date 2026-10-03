@@ -1192,8 +1192,8 @@ let
         mktplcRef = {
           publisher = "DanielSanMedium";
           name = "dscodegpt";
-          version = "3.24.72";
-          hash = "sha256-yIQALNOm9C0ji+g96oqaXDuwlbS+088+whbFTQAe5Z8=";
+          version = "3.24.76";
+          hash = "sha256-8HwYwCtROlU8txNVREr45Jx1tpCI2a50uHfAb6iT7V8=";
         };
         meta = {
           changelog = "https://marketplace.visualstudio.com/items/DanielSanMedium.dscodegpt/changelog";
@@ -1244,8 +1244,8 @@ let
         mktplcRef = {
           name = "databricks";
           publisher = "databricks";
-          version = "2.18.0";
-          hash = "sha256-Qf3o0QIW864p8BsRxB+RmGXe28N68Jqrzs+tpxeCceM=";
+          version = "2.19.0";
+          hash = "sha256-hW0Q0gnAanWZ4IuF/AY5uypvHZ5YDjvFnJzGn4Hd7V8=";
         };
         meta = {
           changelog = "https://marketplace.visualstudio.com/items/databricks.databricks/changelog";
@@ -1304,8 +1304,8 @@ let
         mktplcRef = {
           publisher = "denoland";
           name = "vscode-deno";
-          version = "3.53.0";
-          hash = "sha256-M+wFee1x/cCgGMFrDaV7OtIhEORHkLHf/Z06/VuZZmg=";
+          version = "3.53.1";
+          hash = "sha256-9OGG/ZvqzRzTQ6ERT0fKBkGwx1+zwD2FUWr9Hp1wLK0=";
         };
         meta = {
           changelog = "https://marketplace.visualstudio.com/items/denoland.vscode-deno/changelog";
@@ -2246,8 +2246,8 @@ let
         mktplcRef = {
           name = "vscode-drawio";
           publisher = "hediet";
-          version = "1.9.0";
-          hash = "sha256-gi3+mMJcUnkb0FFb6gmx9eI8BRLX3z/kTr7Rk0hudP4=";
+          version = "1.15.0";
+          hash = "sha256-4tRtVxdDYAtkgMu0rpgDnTNqfN4j7JoIpAWYUcfJVRA=";
         };
         meta = {
           description = "This unofficial extension integrates Draw.io into VS Code";
@@ -2725,8 +2725,8 @@ let
         mktplcRef = {
           name = "language-julia";
           publisher = "julialang";
-          version = "1.242.2";
-          hash = "sha256-E8SdCf5emB/ix3qmj56CfWhCGCVIm4voI8fJoyCA2kE=";
+          version = "1.243.2";
+          hash = "sha256-907pr/y67bDKpKs1Sxk+XV7xUL8+e3jYW0tkHNWUEUs=";
         };
         meta = {
           changelog = "https://marketplace.visualstudio.com/items/julialang.language-julia/changelog";
@@ -4304,8 +4304,8 @@ let
         mktplcRef = {
           publisher = "shd101wyy";
           name = "markdown-preview-enhanced";
-          version = "0.8.36";
-          hash = "sha256-acmubrmOUirHkam1CreoP7p/LR2/6A6kpBku8Den83Y=";
+          version = "0.8.39";
+          hash = "sha256-bRFEb6YtLFOTe9K1Y0vyfQDTgYVa6udy2CU2wz4Ht3w=";
         };
         meta = {
           description = "Provides a live preview of markdown using either markdown-it or pandoc";

@@ -3128,7 +3128,7 @@ with pkgs;
     ocamlPackages = ocaml-ng.ocamlPackages_4_14;
   };
 
-  inherit (coqPackages_9_0) compcert;
+  inherit (coqPackages_9_2) compcert;
 
   corretto11 = javaPackages.compiler.corretto11;
   corretto17 = javaPackages.compiler.corretto17;
@@ -6713,12 +6713,14 @@ with pkgs;
       zig_0_14 = zigPackages."0.14";
       zig_0_15 = zigPackages."0.15";
       zig_0_16 = zigPackages."0.16";
+      zig_0_17 = zigPackages."0.17";
     })
     zigPackages
     zig_0_13
     zig_0_14
     zig_0_15
     zig_0_16
+    zig_0_17
     ;
 
   # If this is updated, the default zls version should also be updated to match the default zig version.
@@ -7525,8 +7527,6 @@ with pkgs;
       mongodb =
         (callPackages ../servers/monitoring/zabbix/zabbix-agent2-plugins/mongodb.nix { }).${version};
       mssql = (callPackages ../servers/monitoring/zabbix/zabbix-agent2-plugins/mssql.nix { }).${version};
-      nvidia-gpu =
-        (callPackages ../servers/monitoring/zabbix/zabbix-agent2-plugins/nvidia-gpu.nix { }).${version};
       postgresql =
         (callPackages ../servers/monitoring/zabbix/zabbix-agent2-plugins/postgresql.nix { }).${version};
     };
@@ -8925,7 +8925,9 @@ with pkgs;
 
   obs-studio = qt6Packages.callPackage ../applications/video/obs-studio { };
 
-  obs-studio-plugins = recurseIntoAttrs (callPackage ../applications/video/obs-studio/plugins { });
+  obs-studio-plugins = recurseIntoAttrs (
+    callPackage ../applications/video/obs-studio/plugins.nix { }
+  );
   wrapOBS = callPackage ../applications/video/obs-studio/wrapper.nix { };
 
   open-music-kontrollers = recurseIntoAttrs {

@@ -278,6 +278,7 @@ in
   amazon-init-shell = runTest ./amazon-init-shell.nix;
   amazon-ssm-agent = runTest ./amazon-ssm-agent.nix;
   amd-sev = runTest ./amd-sev.nix;
+  amuled = runTest ./amuled.nix;
   android-translation-layer = runTest ./android-translation-layer.nix;
   angie-api = runTest ./angie-api.nix;
   angrr = runTest ./angrr.nix;
@@ -380,6 +381,7 @@ in
   budgie = runTest ./budgie.nix;
   buildbot = runTest ./buildbot.nix;
   buildkite-agents = runTest ./buildkite-agents.nix;
+  buildstream = runTest ./buildstream.nix;
   bulwark = runTest ./bulwark.nix;
   c2fmzq = runTest ./c2fmzq.nix;
   caddy = runTest ./caddy.nix;

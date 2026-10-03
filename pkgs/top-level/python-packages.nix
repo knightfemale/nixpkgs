@@ -5715,6 +5715,8 @@ self: super: with self; {
 
   eval-type-backport = callPackage ../development/python-modules/eval-type-backport { };
 
+  evalidate = callPackage ../development/python-modules/evalidate { };
+
   evaluate = callPackage ../development/python-modules/evaluate { };
 
   evdev = callPackage ../development/python-modules/evdev { };
@@ -9212,6 +9214,10 @@ self: super: with self; {
 
   khanaa = callPackage ../development/python-modules/khanaa { };
 
+  kiauto = callPackage ../development/python-modules/kiauto {
+    kicadPkg = pkgs.kicad;
+  };
+
   kicad = toPythonModule (pkgs.kicad.override { python3 = python; }).src;
 
   kicad-python = callPackage ../development/python-modules/kicad-python { };
@@ -10536,6 +10542,8 @@ self: super: with self; {
   marklas = callPackage ../development/python-modules/marklas { };
 
   marko = callPackage ../development/python-modules/marko { };
+
+  markovify = callPackage ../development/python-modules/markovify { };
 
   markuppy = callPackage ../development/python-modules/markuppy { };
 
@@ -20037,7 +20045,7 @@ self: super: with self; {
 
   steampy = callPackage ../development/python-modules/steampy { };
 
-  steamworkspy = callPackage ../development/python-modules/steamworkspy { };
+  steamworks = callPackage ../development/python-modules/steamworks { };
 
   stem = callPackage ../development/python-modules/stem { };
 
@@ -23112,6 +23120,8 @@ self: super: with self; {
   zenlog = callPackage ../development/python-modules/zenlog { };
 
   zenoh = callPackage ../development/python-modules/zenoh { };
+
+  zensical = callPackage ../development/python-modules/zensical { };
 
   zephyr-python-api = callPackage ../development/python-modules/zephyr-python-api { };
 
