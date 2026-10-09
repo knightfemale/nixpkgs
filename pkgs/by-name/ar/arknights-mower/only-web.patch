@@ -1,0 +1,30 @@
+diff --git a/webserver.py b/webserver.py
+new file mode 100644
+index 00000000..e5cfe94d
+--- /dev/null
++++ b/webserver.py
+@@ -0,0 +1,24 @@
++#!/usr/bin/env python3
++import os
++import sys
++
++_site_dir = os.path.dirname(os.path.abspath(__file__))
++if _site_dir not in sys.path:
++    sys.path.append(_site_dir)
++
++from arknights_mower.utils import config
++from server import app
++
++
++def main() -> None:
++    port = int(os.environ.get("MOWER_PORT", str(config.conf.webview.port)))
++
++    token = os.environ.get("MOWER_TOKEN") or config.conf.webview.token
++    app.token = token
++
++    host = "0.0.0.0" if token else "127.0.0.1"
++    app.run(host=host, port=port)
++
++
++if __name__ == "__main__":
++    main()

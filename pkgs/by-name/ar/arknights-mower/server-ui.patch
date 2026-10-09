@@ -1,0 +1,34 @@
+diff --git a/server.py b/server.py
+index 42a680ef..6fd37178 100755
+--- a/server.py
++++ b/server.py
+@@ -31,6 +31,8 @@ mimetypes.add_type("text/html", ".html")
+ mimetypes.add_type("text/css", ".css")
+ mimetypes.add_type("application/javascript", ".js")
+ 
++UI_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui", "dist")
++
+ app = Flask(__name__, static_folder="ui/dist", static_url_path="")
+ sock = Sock(app)
+ CORS(app)
+@@ -73,17 +75,17 @@ def require_token(f):
+ 
+ @app.route("/<path:path>")
+ def serve_index(path):
+-    return send_from_directory("ui/dist", path)
++    return send_from_directory(UI_DIST, path)
+ 
+ 
+ @app.errorhandler(404)
+ def not_found(e):
+     if (path := request.path).startswith("/docs"):
+         try:
+-            return send_from_directory("ui/dist" + path, "index.html")
++            return send_from_directory(UI_DIST, "index.html")
+         except NotFound:
+             return "<h1>404 Not Found</h1>", 404
+-    return send_from_directory("ui/dist", "index.html")
++    return send_from_directory(UI_DIST, "index.html")
+ 
+ 
+ @app.route("/conf", methods=["GET", "POST"])
