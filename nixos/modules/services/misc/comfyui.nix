@@ -11,7 +11,13 @@ let
   isDefaultDataDir = cfg.dataDir == "/var/lib/comfyui";
 
   package = cfg.package.override (oldArgs: {
-    extraPackages = ps: (oldArgs.extraPackages or (_: [ ]) ps) ++ cfg.extraPackages ps;
+    extraPackages =
+      ps:
+      lib.unique (
+        (oldArgs.extraPackages or (_: [ ])) ps
+        ++ cfg.extraPackages ps
+        ++ lib.concatMap (node: node.extraPackages ps) cfg.customNodes
+      );
   });
 
   modelDrvs = map (m: {
@@ -26,6 +32,18 @@ let
       ln -sn ${lib.escapeShellArg "${x.drv}"} ${lib.escapeShellArg "${cfg.dataDir}/models/${p}/${x.m.name}"}
     '') x.m.installPaths
   ) modelDrvs;
+
+  customNodeSymlinks = lib.concatMapStringsSep "\n" (node: ''
+    if [[ ! -d ${lib.escapeShellArg "${node.src}"} ]]; then
+      echo "services.comfyui.customNodes.${node.name}: source is not a directory: ${node.src}" >&2
+      exit 1
+    fi
+    if [[ -e ${lib.escapeShellArg "${cfg.dataDir}/custom_nodes/${node.name}"} || -L ${lib.escapeShellArg "${cfg.dataDir}/custom_nodes/${node.name}"} ]]; then
+      echo "services.comfyui.customNodes.${node.name}: destination already exists: ${cfg.dataDir}/custom_nodes/${node.name}" >&2
+      exit 1
+    fi
+    ln -sn ${lib.escapeShellArg "${node.src}"} ${lib.escapeShellArg "${cfg.dataDir}/custom_nodes/${node.name}"}
+  '') cfg.customNodes;
 in
 {
   options = {
@@ -151,6 +169,84 @@ in
         '';
       };
 
+      customNodes = lib.mkOption {
+        type = lib.types.listOf (
+          lib.types.submodule {
+            options = {
+              name = lib.mkOption {
+                type = lib.types.addCheck (lib.types.strMatching "[A-Za-z0-9._-]+") (
+                  name: name != "." && name != ".."
+                );
+                description = ''
+                  Directory name below `custom_nodes`.
+
+                  It must be unique and is used as the link name, so it has to be a
+                  single path component.
+                '';
+              };
+
+              src = lib.mkOption {
+                type = lib.types.path;
+                description = ''
+                  Source of the custom node: a derivation whose output is the node
+                  directory, or a path to such a directory.
+
+                  The directory must contain the node's `__init__.py`. The source is
+                  linked into the data directory and is therefore read-only; nodes
+                  that need build steps or patches should be passed as a derivation.
+
+                  The source must be readable inside the service's sandbox; paths
+                  below `/home` are hidden by `ProtectHome`.
+                '';
+              };
+
+              extraPackages = lib.mkOption {
+                type = lib.types.functionTo (lib.types.listOf lib.types.package);
+                default = _: [ ];
+                defaultText = lib.literalExpression "ps: [ ]";
+                example = lib.literalExpression "ps: with ps; [ numpy ]";
+                description = ''
+                  Python packages required by the node, resolved against ComfyUI's
+                  Python package set and added to its environment.
+
+                  Dependencies are not read from the node's `requirements.txt`; list
+                  them explicitly here. These packages belong to the node: removing it
+                  from `customNodes` also removes them. Use the top-level
+                  `extraPackages` for packages shared by multiple nodes.
+                '';
+              };
+            };
+          }
+        );
+        default = [ ];
+        example = lib.literalExpression ''
+          [
+            {
+              name = "ComfyUI-Manager";
+              src = pkgs.fetchFromGitHub {
+                owner = "ltdrdata";
+                repo = "ComfyUI-Manager";
+                rev = "d47c9346190397e1c316bc5a82155faaf9f5d700";
+                hash = "sha256-ACHHTyIZ3U23GwWv6tgN/jWbkJbv372I10jAUi9ix5o=";
+              };
+              extraPackages = ps: with ps; [
+                gitpython
+                rich
+                toml
+              ];
+            }
+          ]
+        '';
+        description = ''
+          ComfyUI custom nodes to install declaratively.
+
+          Each node's `src` is symlinked to `dataDir/custom_nodes/<name>`.
+          Store symlinks below `custom_nodes` are managed by this option: stale
+          ones are removed on start, while files and symlinks not pointing into
+          the Nix store are left untouched.
+        '';
+      };
+
       extraPackages = lib.mkOption {
         type = lib.types.functionTo (lib.types.listOf lib.types.package);
         default = _: [ ];
@@ -160,6 +256,10 @@ in
         '';
         description = ''
           List of packages to add to ComfyUI's Python environment.
+
+          Use this for packages shared by multiple custom nodes or needed by the
+          ComfyUI environment itself; node-specific packages belong in
+          `customNodes.*.extraPackages`.
 
           A popular example is `python3Packages.comfyui-manager` for installing and
           managing custom nodes from within ComfyUI.
@@ -174,6 +274,14 @@ in
       "--database-url=sqlite:///${cfg.dataDir}/user/comfyui.db"
       "--listen=${lib.concatStringsSep "," cfg.listen}"
       "--port=${toString cfg.port}"
+    ];
+
+    assertions = [
+      {
+        assertion =
+          lib.length (lib.unique (map (node: node.name) cfg.customNodes)) == lib.length cfg.customNodes;
+        message = "services.comfyui.customNodes: names must be unique.";
+      }
     ];
 
     # owner read back from the unit, not spelled out: StateDirectory= infers it, this rule has to be told
@@ -205,8 +313,19 @@ in
           fi
         done
 
+        # Only the top level of custom_nodes is managed; do not touch symlinks inside a node's source.
+        readarray -d "" stale < <(find "${cfg.dataDir}/custom_nodes" -maxdepth 1 -type l -print0)
+        for link in "''${stale[@]}"; do
+          if [[ "$(readlink "$link")" == ${lib.escapeShellArg builtins.storeDir}/* ]]; then
+            rm "$link"
+          fi
+        done
+
         # Rebuild model symlinks
         ${modelSymlinks}
+
+        # Rebuild custom node symlinks
+        ${customNodeSymlinks}
       '';
 
       serviceConfig = {
